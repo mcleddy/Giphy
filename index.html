@@ -4,31 +4,29 @@
 <head>
     <title>Giphy-App</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 
 <body>
     <div class="container">
         <h1>Halloween Gif Generator</h1>
- 
+       
+        <div col-9 id="buttons-view"></div>
         <!--renders new buttons-->
-        <div id="buttons-view"></div>
-
-        <form id="gif-form">
+        <form col-9 id="gif-form">
             <label for="gif-input">Find a Spooky Gif!</label>
             <input type="text" id="gif-input"><br>
-
-            <div id="gifs-appear-here">
-            </div>
-
             <input id="add-gif" type="submit" value="Find a Gif">
+            <div id="gifs-appear-here" data-state="still">
+            </div>
         </form>
 
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
     <script type="text/javascript">
-        var gifs = ["Skeletons", "Candy", "Ghosts", "Pumpkins"];
+        var gifs = ["Skeletons", "Candy", "Ghosts", "Pumpkins",];
 
         // Function for displaying movie data
         function renderButtons() {
@@ -76,8 +74,7 @@
 
             // Constructing a queryURL using the animal name
             var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
-                gif + "&api_key=BkaUZZWcFij6J7AoQj3WtPb1R2p9O6V9&limit=10";
-
+                gifs + "&api_key=BkaUZZWcFij6J7AoQj3WtPb1R2p9O6V9&limit=10";
             // Performing an AJAX request with the queryURL
             $.ajax({
                 url: queryURL,
@@ -94,39 +91,77 @@
                     // Looping through each result item
                     for (var i = 0; i < results.length; i++) {
 
-                        // Creating and storing a div tag
-                        var gifDiv = $("<div>");
+                        if (results[i].rating !== "r" && results[i].rating !== "pg-13") {
+                            // Creating and storing a div tag
+                            var gifDiv = $("<div>");
 
-                        // Creating a paragraph tag with the result item's rating
-                        var p = $("<p>").text("Rating: " + results[i].rating);
+                            // Creating a paragraph tag with the result item's rating
+                            var p = $("<p>").text("Rating: " + results[i].rating);
 
-                        // Creating and storing an image tag
-                        var gifImage = $("<img>");
-                        // Setting the src attribute of the image to a property pulled off the result item
-                        gifImage.attr("src", results[i].images.fixed_height.url);
+                            // Creating and storing an image tag
+                            var gifImage = $("<img>");
+                            // Setting the src attribute of the image to a property pulled off the result item
+                            gifImage.attr("src", results[i].images.fixed_height.url);
 
-                        // Appending the paragraph and image tag to the animalDiv
-                        gifDiv.append(p);
-                        gifDiv.append(gifImage);
 
-                        // Prependng the animalDiv to the HTML page in the "#gifs-appear-here" div
-                        $("#gifs-appear-here").prepend(gifDiv);
+                            // Appending the paragraph and image tag to the animalDiv
+                            gifDiv.append(p);
+                            gifDiv.append(gifImage);
+                            $("#gifs-appear-here").prepend(gifDiv);
+                        }
                     }
-                });
+                })
         });
+        //add pause and animate to gifs
+        $("<img>").on("click", function () {
+            var state = $(this).attr("data-state");
+            if (state === "still") {
+                $(this).attr("src", $(this).attr("data-animate"));
+                $(this).attr("data-state", "animate");
+            } else {
+                $(this).attr("src", $(this).attr("data-still"));
+                $(this).attr("data-state", "still");
+
+                console.log(state);
+            }
+        });
+        
 
     </script>
     <style>
-        body {
-            margin: 0;
-            background: url("https://sftextures.com/texture/6150/0/6149/halloween-spooky-stock-orange-background-black-spider-web-center-stage-empty-smog-top-256x256.jpg") no-repeat center center fixed;
-            height: 100%;
-            width: 100%;
-        }
-
         h1 {
             text-align: center;
             src: url(https://www.fontspace.com/mistis-fonts/october-twilight?);
+            color: orange;
+            -webkit-text-stroke: 1px black;
+            font-weight: bolder;
+        }
+
+        #gif-form {
+            text-align: right;
+            padding: 30px;
+            color: orange;
+            -webkit-text-stroke: 1px black;
+            font-weight: bolder;
+        }
+
+        #add-gif {
+            background-color: orange;
+            padding: 10px;
+            margin-right: 40px;
+            margin-top: 15px;
+
+        }
+
+        #gifs-appear-here {
+            text-align: left;
+            margin: 20px;
+        }
+
+        button {
+            background-color: orange;
+            -webkit-text-stroke: 1px black;
+            margin: 10px;
         }
     </style>
 
