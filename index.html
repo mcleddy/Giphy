@@ -11,14 +11,14 @@
 <body>
     <div class="container">
         <h1>Halloween Gif Generator</h1>
-       
+
         <div col-9 id="buttons-view"></div>
         <!--renders new buttons-->
         <form col-9 id="gif-form">
             <label for="gif-input">Find a Spooky Gif!</label>
             <input type="text" id="gif-input"><br>
             <input id="add-gif" type="submit" value="Find a Gif">
-            <div id="gifs-appear-here" data-state="still">
+            <div id="gifs-appear-here">
             </div>
         </form>
 
@@ -26,7 +26,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
     <script type="text/javascript">
-        var gifs = ["Skeletons", "Candy", "Ghosts", "Pumpkins",];
+        var gifs = ["Skeletons", "Candy", "Ghosts", "Pumpkins", "Witches", "Zombies", "Jack-o-lanterns", "Bats", "Mummies", "Trick-or-Treat", "Spooky"];
 
         // Function for displaying movie data
         function renderButtons() {
@@ -34,8 +34,9 @@
             // (this is necessary otherwise we will have repeat buttons)
             $("#buttons-view").empty();
 
-            // Looping through the array of movies
-            for (var i = 0; i < gifs.length; i++) { // Then dynamicaly generating buttons for each movie in the array. //
+            // Looping through the array of gifs
+            for (var i = 0; i < gifs.length; i++) {
+                // Then dynamicaly generating buttons for each gif in the array. //
                 $("<button>")
                 var a = $("<button>");
                 // Adding a class
@@ -57,24 +58,24 @@
 
             // This line will grab the text from the input box
             var gif = $("#gif-input").val().trim();
-            // The movie from the textbox is then added to our array
+            // The gif from the textbox is then added to our array
             gifs.push(gif);
 
             // calling renderButtons which handles the processing of our movie array
             renderButtons();
+
         });
 
         // Calling the renderButtons function at least once to display the initial list of movies
         renderButtons();
-
         //attach gif to button
         $("button").on("click", function () {
-            // Grabbing and storing the data-animal property value from the button
-            var gif = $(this).attr("data-gif");
+            // Grabbing and storing the dataproperty value from the button
+            var gif = $(this).attr("data-name");
 
-            // Constructing a queryURL using the animal name
+            // Constructing a queryURL using the gif input
             var queryURL = "https://api.giphy.com/v1/gifs/search?q=" +
-                gifs + "&api_key=BkaUZZWcFij6J7AoQj3WtPb1R2p9O6V9&limit=10";
+                gif + "&api_key=BkaUZZWcFij6J7AoQj3WtPb1R2p9O6V9&limit=10";
             // Performing an AJAX request with the queryURL
             $.ajax({
                 url: queryURL,
@@ -94,38 +95,43 @@
                         if (results[i].rating !== "r" && results[i].rating !== "pg-13") {
                             // Creating and storing a div tag
                             var gifDiv = $("<div>");
-
+                            
                             // Creating a paragraph tag with the result item's rating
                             var p = $("<p>").text("Rating: " + results[i].rating);
 
                             // Creating and storing an image tag
                             var gifImage = $("<img>");
                             // Setting the src attribute of the image to a property pulled off the result item
-                            gifImage.attr("src", results[i].images.fixed_height.url);
-
-
+                            gifImage.attr("src", results[i].images.fixed_height_still.url);
+                           // gifImage.attr("src", results[i].images.fixed_height.url);
+                            var still = results[i].images.fixed_height_still.url;
+                            var animate = results[i].images.fixed_height.url;
                             // Appending the paragraph and image tag to the animalDiv
                             gifDiv.append(p);
                             gifDiv.append(gifImage);
+
+                            gifDiv.on("click", function () {
+                                
+                                var state = $(this).attr("data-state");
+                                console.log(state);
+                                if (state === "still") {
+                                    $(this).attr("src", $(this).attr("data-animate"));
+                                    $(this).attr("data-state", "animate");
+                                } else {
+                                    $(this).attr("src", $(this).attr("data-still"));
+                                    $(this).attr("data-state", "still");
+
+
+                                }
+                            });
                             $("#gifs-appear-here").prepend(gifDiv);
                         }
                     }
                 })
         });
         //add pause and animate to gifs
-        $("<img>").on("click", function () {
-            var state = $(this).attr("data-state");
-            if (state === "still") {
-                $(this).attr("src", $(this).attr("data-animate"));
-                $(this).attr("data-state", "animate");
-            } else {
-                $(this).attr("src", $(this).attr("data-still"));
-                $(this).attr("data-state", "still");
+        ;
 
-                console.log(state);
-            }
-        });
-        
 
     </script>
     <style>
